@@ -20,14 +20,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          # تمت إزالة cache: 'pip' لتفادي انهيار الـ Job في حال غياب الملف عن المستودع.
 
-      - name: Diagnostic - List Repository Structure
+      - name: Inspect Repository Structure
         run: |
-          echo "Repository structure at checkout:"
+          echo "========== CURRENT DIRECTORY =========="
+          pwd
+          echo "========== ROOT CONTENTS =========="
           ls -la
-          echo "Searching for any requirements files:"
-          find . -name "*req*.txt" -o -name "pyproject.toml" || true
+          echo "========== REPOSITORY TREE =========="
+          find . -maxdepth 3 -type f | sort
+          echo "========== DEPENDENCY FILES =========="
+          find . -type f \( -name "requirements.txt" -o -name "pyproject.toml" -o -name "Pipfile" -o -name "poetry.lock" \) -print
+          echo "========== RELEASE FILES =========="
+          find . -type f \( -name "run_tests.sh" -o -name "alembic.ini" \) -print
+          echo "========== APPLICATION DIRECTORIES =========="
+          find . -maxdepth 4 -type d \( -name "app" -o -name "tests" -o -name "alembic" \) -print
 
       - name: Install Project Dependencies
         run: |
